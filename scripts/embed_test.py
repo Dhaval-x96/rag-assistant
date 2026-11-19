@@ -14,7 +14,12 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
 MODEL_NAME = "all-MiniLM-L6-v2"  # 384 dims, matches vector(384)
-SENTENCES = ["This is a test sentence.", "This is another test sentence."]
+SENTENCES = [
+    "Cats drink milk and eat fish",
+    "A cat is a pet animal",
+    "Put petrol in the car",
+    "The engine is overheating",
+]
 
 
 def main() -> None:
