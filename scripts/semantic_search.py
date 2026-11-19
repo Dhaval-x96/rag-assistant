@@ -4,7 +4,10 @@ from sentence_transformers import SentenceTransformer
 import requests
 import os
 
-QUESTION = "What do cats eat?"
+# Test questions:
+#   "What does Sheru eat?"      -> expect "paneer tikka" (fact exists only in our DB)
+#   "How do I bake a cake?"     -> expect "I don't know" (nothing in the DB about it)
+QUESTION = "What does Sheru eat?"
 MODEL_NAME = "all-MiniLM-L6-v2"
 
 # Load model and encode first, so the DB connection is not left idle.
@@ -46,13 +49,16 @@ try:
         json={
             "model": "claude-haiku-5-5",
             "messages": [
-                {"role": "user", "content": f"Answer the question based on the context below.\n\nContext: {context}\n\nQuestion: {QUESTION}"},
+                {"role": "user", "content": f"Answer the question based only on the context below. If the answer is not in the context, say you don't know.\n\nContext: {context}\n\nQuestion: {QUESTION}"},
             ],
             "max_tokens": 1024,
             "system": "You are a helpful assistant."
         })
 
-        print(response.json()["content"][0]["text"])
+        # content can also hold "thinking" blocks, so print only the text blocks.
+        for block in response.json()["content"]:
+            if block["type"] == "text":
+                print(block["text"])
 
 finally:
     conn.close()

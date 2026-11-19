@@ -14,11 +14,11 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s %(message)s")
 log = logging.getLogger(__name__)
 
 MODEL_NAME = "all-MiniLM-L6-v2"  # 384 dims, matches vector(384)
+# Earlier runs already stored: "Cats drink milk and eat fish", "A cat is a pet animal",
+# "Put petrol in the car", "The engine is overheating".
+# This made-up fact exists only in our DB, so an answer that uses it proves the LLM read the context.
 SENTENCES = [
-    "Cats drink milk and eat fish",
-    "A cat is a pet animal",
-    "Put petrol in the car",
-    "The engine is overheating",
+    "My cat Sheru only eats paneer tikka.",
 ]
 
 
