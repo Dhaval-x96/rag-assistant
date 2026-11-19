@@ -1,10 +1,10 @@
 
 import psycopg2
 from sentence_transformers import SentenceTransformer
-
+import requests
+import os
 
 QUESTION = "What do cats eat?"
-
 MODEL_NAME = "all-MiniLM-L6-v2"
 
 # Load model and encode first, so the DB connection is not left idle.
@@ -24,8 +24,35 @@ try:
             "LIMIT 5",
             (vector.tolist(),),
         )
-
+    
+        ## We can use this top most chunk text and question and pass
+        ## to llm for give proper ans.
+        chunks =[]
         for chunk_index, chunk_text, distance in cursor.fetchall():
             print(f"chunk {chunk_index} | distance={distance} | {chunk_text}")
+            chunks.append(chunk_text)
+
+        context = " ".join(chunks)
+        token = os.getenv("ANTHROPIC_API_KEY")
+        if not token:
+            raise ValueError("ANTHROPIC_API_KEY environment variable is not set.")
+        
+        response = requests.post("https://api.anthropic.com/v1/messages", 
+                                 headers={
+            "Content-Type": "application/json",
+            "x-api-key": token,
+            "Anthropic-Version": "2026-10-21"
+        },
+        json={
+            "model": "claude-haiku-5-5",
+            "messages": [
+                {"role": "user", "content": f"Answer the question based on the context below.\n\nContext: {context}\n\nQuestion: {QUESTION}"},
+            ],
+            "max_tokens": 1024,
+            "system": "You are a helpful assistant."
+        })
+
+        print(response.json()["content"][0]["text"])
+
 finally:
     conn.close()
