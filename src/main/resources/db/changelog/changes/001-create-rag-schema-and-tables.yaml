@@ -1,0 +1,164 @@
+databaseChangeLog:
+
+  - changeSet:
+      id: 001-create-schema
+      author: rag-assistant
+      changes:
+        - sql:
+            sql: CREATE SCHEMA IF NOT EXISTS rag
+      rollback:
+        - sql:
+            sql: DROP SCHEMA IF EXISTS rag
+
+  # pgvector extension lives in "public" so the vector type resolves everywhere.
+  - changeSet:
+      id: 001-create-vector-extension
+      author: rag-assistant
+      changes:
+        - sql:
+            sql: CREATE EXTENSION IF NOT EXISTS vector
+      rollback:
+        - sql:
+            sql: DROP EXTENSION IF EXISTS vector
+
+  - changeSet:
+      id: 001-create-repo
+      author: rag-assistant
+      changes:
+        - createTable:
+            schemaName: rag
+            tableName: repo
+            columns:
+              - column:
+                  name: repo_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_repo
+              - column:
+                  name: git_url
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: status
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 001-create-files
+      author: rag-assistant
+      changes:
+        - createTable:
+            schemaName: rag
+            tableName: files
+            columns:
+              - column:
+                  name: file_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_files
+              - column:
+                  name: repo_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_files_repo
+                    referencedTableSchemaName: rag
+                    referencedTableName: repo
+                    referencedColumnNames: repo_id
+              - column:
+                  name: file_path
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: extension
+                  type: text
+              - column:
+                  name: created_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+              - column:
+                  name: updated_at
+                  type: timestamptz
+                  defaultValueComputed: now()
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 001-create-chunks
+      author: rag-assistant
+      changes:
+        - createTable:
+            schemaName: rag
+            tableName: chunks
+            columns:
+              - column:
+                  name: chunk_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_chunks
+              - column:
+                  name: file_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_chunks_files
+                    referencedTableSchemaName: rag
+                    referencedTableName: files
+                    referencedColumnNames: file_id
+              - column:
+                  name: chunk_text
+                  type: text
+                  constraints:
+                    nullable: false
+              - column:
+                  name: chunk_index
+                  type: integer
+                  constraints:
+                    nullable: false
+
+  - changeSet:
+      id: 001-create-embedding
+      author: rag-assistant
+      changes:
+        - createTable:
+            schemaName: rag
+            tableName: embedding
+            columns:
+              - column:
+                  name: embedding_id
+                  type: uuid
+                  defaultValueComputed: gen_random_uuid()
+                  constraints:
+                    primaryKey: true
+                    primaryKeyName: pk_embedding
+              - column:
+                  name: chunk_id
+                  type: uuid
+                  constraints:
+                    nullable: false
+                    foreignKeyName: fk_embedding_chunks
+                    referencedTableSchemaName: rag
+                    referencedTableName: chunks
+                    referencedColumnNames: chunk_id
+              - column:
+                  name: embedding
+                  type: vector(384)
+                  constraints:
+                    nullable: false
