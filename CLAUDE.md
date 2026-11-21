@@ -21,7 +21,7 @@ This is a learning project. The user writes the code. Claude guides.
 ## 3. Git: never commit
 
 - Never run `git commit`, `git push`, `git tag`, `git merge`, `git rebase`, `git stash`, `git reset`, `git clean`, `git checkout -- <file>` or any force operation.
-- Read-only git is fine: `git status`, `git diff`, `git log`.
+- Read-only git is fine: `git repoStatus`, `git diff`, `git log`.
 - Even if asked to commit, remind the user of this rule and let them do it themselves.
 
 ## 4. Database: no operation without explicit permission

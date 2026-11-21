@@ -26,7 +26,7 @@ erDiagram
     repo {
         uuid repo_id PK
         text git_url
-        text status
+        text repoStatus
         timestamptz created_at
     }
     files {
