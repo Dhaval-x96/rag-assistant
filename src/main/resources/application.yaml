@@ -23,3 +23,7 @@ spring:
   liquibase:
     change-log: classpath:db/changelog/db.changelog-master.yaml
     liquibase-schema: public
+
+# Python indexer service (../rag-indexer) that clones, chunks and embeds a repo.
+indexer:
+  base-url: http://localhost:8000

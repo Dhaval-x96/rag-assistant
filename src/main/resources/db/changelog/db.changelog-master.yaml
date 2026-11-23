@@ -2,3 +2,7 @@ databaseChangeLog:
   - include:
       file: changes/001-create-rag-schema-and-tables.yaml
       relativeToChangelogFile: true
+
+  - include:
+      file: changes/002-add-line-numbers-to-chunks.yaml
+      relativeToChangelogFile: true

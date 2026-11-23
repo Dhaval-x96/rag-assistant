@@ -1,0 +1,15 @@
+databaseChangeLog:
+  - changeSet:
+      id: 002-add-line-numbers-to-chunks
+      author: dhaval
+      changes:
+        - addColumn:
+            schemaName: rag
+            tableName: chunks
+            columns:
+              - column:
+                  name: start_line
+                  type: INTEGER
+              - column:
+                  name: end_line
+                  type: INTEGER
