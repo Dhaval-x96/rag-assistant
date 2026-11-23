@@ -1,5 +1,7 @@
 package com.codebase.assistant.service;
 
+import com.codebase.assistant.dto.AskRequest;
+import com.codebase.assistant.dto.AskResponse;
 import com.codebase.assistant.dto.CreateRepoRequest;
 import com.codebase.assistant.dto.IndexerResponse;
 import com.codebase.assistant.dto.RepoResponse;
@@ -7,6 +9,7 @@ import com.codebase.assistant.enums.RepoStatus;
 import com.codebase.assistant.model.Repo;
 import com.codebase.assistant.repository.RepoRepository;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestClient;
@@ -45,9 +48,24 @@ public class RepoService {
         return buildRepoResponse(saved);
     }
 
+    public AskResponse askResponses(UUID uuid, AskRequest request) {
+        Repo repo = repoRepository.findById(uuid).orElseThrow(() ->
+                new ResponseStatusException(HttpStatus.NOT_FOUND, "Repo not found"));
+
+        if (repo.getRepoStatus() != RepoStatus.DONE) {
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "Repo is not indexed yet");
+        }
+
+        return restClient.post()
+                .uri("/repo/{id}/ask", uuid)
+                .body(request)
+                .retrieve()
+                .body(AskResponse.class);
+    }
+
     public RepoResponse getRepo(UUID id) {
         Repo repo = repoRepository.findById(id)
-                .orElseThrow(()-> new ResponseStatusException(HttpStatusCode.valueOf(404)));
+                .orElseThrow(() -> new ResponseStatusException(HttpStatusCode.valueOf(404)));
         return buildRepoResponse(repo);
     }
 
@@ -60,7 +78,7 @@ public class RepoService {
         return repoRepository.save(repo);
     }
 
-    private RepoResponse buildRepoResponse(Repo repo){
+    private RepoResponse buildRepoResponse(Repo repo) {
         return new RepoResponse(
                 repo.getRepoId(),
                 repo.getGitUrl(),
@@ -68,7 +86,7 @@ public class RepoService {
                 repo.getCreatedAt());
     }
 
-    private IndexerResponse startIndexing(UUID uuid){
+    private IndexerResponse startIndexing(UUID uuid) {
         return this.restClient.post()
                 .uri("/index/{id}", uuid)
                 .retrieve().body(IndexerResponse.class);
