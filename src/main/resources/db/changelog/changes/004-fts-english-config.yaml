@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 004-fts-english-config
+      author: dhaval
+      changes:
+        - sql:
+            sql: >
+              DROP INDEX IF EXISTS rag.idx_chunks_text_search;
+              ALTER TABLE rag.chunks DROP COLUMN text_search;
+              ALTER TABLE rag.chunks ADD COLUMN text_search tsvector
+                GENERATED ALWAYS AS (to_tsvector('english', chunk_text)) STORED;
+              CREATE INDEX idx_chunks_text_search ON rag.chunks USING GIN (text_search);

@@ -10,3 +10,7 @@ databaseChangeLog:
   - include:
       file: changes/003-add-fts-to-chunks.yml
       relativeToChangelogFile: true
+
+  - include:
+      file: changes/004-fts-english-config.yaml
+      relativeToChangelogFile: true
