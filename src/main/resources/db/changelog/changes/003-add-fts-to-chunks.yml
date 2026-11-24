@@ -1,0 +1,12 @@
+databaseChangeLog:
+  - changeSet:
+      id: 003-add-fts-to-chunks
+      author: dhaval
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE rag.chunks
+              ADD COLUMN text_search tsvector
+              GENERATED ALWAYS AS (to_tsvector('simple', chunk_text)) STORED;
+              CREATE INDEX idx_chunks_text_search
+              ON rag.chunks USING GIN (text_search);

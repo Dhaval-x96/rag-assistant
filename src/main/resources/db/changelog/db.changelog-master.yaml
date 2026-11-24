@@ -6,3 +6,7 @@ databaseChangeLog:
   - include:
       file: changes/002-add-line-numbers-to-chunks.yaml
       relativeToChangelogFile: true
+
+  - include:
+      file: changes/003-add-fts-to-chunks.yml
+      relativeToChangelogFile: true
