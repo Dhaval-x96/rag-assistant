@@ -14,3 +14,7 @@ databaseChangeLog:
   - include:
       file: changes/004-fts-english-config.yaml
       relativeToChangelogFile: true
+
+  - include:
+      file: changes/005-add-is-test-to-files.yaml
+      relativeToChangelogFile: true

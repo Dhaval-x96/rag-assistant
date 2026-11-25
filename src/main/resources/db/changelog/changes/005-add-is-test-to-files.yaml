@@ -1,0 +1,9 @@
+databaseChangeLog:
+  - changeSet:
+      id: 005-add-is-test-to-files
+      author: dhaval
+      changes:
+        - sql:
+            sql: >
+              ALTER TABLE rag.files
+              ADD COLUMN is_test BOOLEAN NOT NULL DEFAULT false;
